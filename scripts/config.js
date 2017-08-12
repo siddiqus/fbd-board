@@ -1,4 +1,4 @@
 AppConfig = {
-    rowCount: 10,
-    columnCount: 16
+    rowCount: 2,
+    columnCount: 2
 };

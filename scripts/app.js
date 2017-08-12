@@ -1,4 +1,13 @@
 $(document).ready(function() {
+
+    var windowFactor = 0.8;
+    var windowHeight = $(window).height();
+    var windowWidth = $(window).width();
+
+    var boardWidth = windowFactor * windowWidth;
+    var boardHeight = windowFactor * windowHeight;
+    var SQUARE_SIDE_LENGTH;
+
     var _getSquareSideLength = function(windowHeight, windowWidth, factor) {
         var maxHeight = windowHeight / AppConfig.rowCount;
         var maxWidth = windowWidth / AppConfig.columnCount;
@@ -32,11 +41,7 @@ $(document).ready(function() {
 
     var _showCardModal = function(backSrc, frontSrc) {
         var modal = $('#fbdModal');
-
         var modalLength = $('.fbd-modal-content').width()
-        $('.fbd-modal-content').height();
-        // var back = $("<img class='fbd-modal-img'/>");
-        // back.attr('src', backSrc);
         var back = _getImage(backSrc, 'fbd-modal-img');
         var front = _getImage(frontSrc, 'fbd-modal-img');
 
@@ -56,47 +61,28 @@ $(document).ready(function() {
         modal.css('display', 'block')
     };
 
-    var _getTileContent = function() {
-        var imgBack = _getImage("https://unsplash.it/300/300/");
-        var imgFront = _getImage("http://lorempixel.com/400/400/");
+    var _getTileContent = function(back, front) {
+        var imgBack = _getImage(back);
+        var imgFront = _getImage(front);
 
         var flipContainer = _getFlipCard(imgBack, imgFront);
         return flipContainer;
     };
 
-    var _getRowDiv = function() {
+    var _getRowDiv = function(row) {
         var rowDiv = $("<div class='fbd-row'></div>");
 
-        for (var col = 0; col < AppConfig.columnCount; col++) {
+        row.forEach(function(col) {
             var tile = $("<div class='fbd-tile'></div>");
-            tile.css('height', squareSideLength);
-            tile.css('width', squareSideLength);
+            tile.css('height', SQUARE_SIDE_LENGTH);
+            tile.css('width', SQUARE_SIDE_LENGTH);
 
-            var tileContent = _getTileContent();
+            var tileContent = _getTileContent(col.back, col.front);
             tile.append(tileContent)
             rowDiv.append(tile);
-        }
-
+        });
         return rowDiv;
     };
-
-    var windowFactor = 0.8;
-    var windowHeight = $(window).height();
-    var windowWidth = $(window).width();
-
-    var boardWidth = windowFactor * windowWidth;
-    var boardHeight = windowFactor * windowHeight;
-
-    var squareSideLength = _getSquareSideLength(boardHeight, boardWidth);
-
-    var board = $('#fbd-grid');
-    for (var row = 0; row < AppConfig.rowCount; row++) {
-        var rowDiv = _getRowDiv();
-        board.append(rowDiv);
-    };
-
-    $('.fbd-tile-img').css('height', squareSideLength);
-    $('.fbd-tile-img').css('width', squareSideLength);
 
     // $(function() {
     //     $('.lazy').Lazy({
@@ -127,11 +113,24 @@ $(document).ready(function() {
     });
 
     $(document).on('mouseenter', '.fbd-flip-container', function() {
-        console.log('on enter')
         this.classList.toggle('fbd-flip');
     });
 
     // $(document).on('mouseleave', '.fbd-flip-container', function() {
     //     this.classList.remove('fbd-flip');
     // });
+
+
+    (function init() {
+        SQUARE_SIDE_LENGTH = _getSquareSideLength(boardHeight, boardWidth);
+        var board = $('#fbd-grid');
+
+        CARD_MAP.forEach(function(row) {
+            var rowDiv = _getRowDiv(row);
+            board.append(rowDiv);
+        })
+
+        $('.fbd-tile-img').css('height', SQUARE_SIDE_LENGTH);
+        $('.fbd-tile-img').css('width', SQUARE_SIDE_LENGTH);
+    })()
 })
